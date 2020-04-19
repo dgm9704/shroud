@@ -1,5 +1,6 @@
 namespace Diwen.BofCrypt.Tests
 {
+    using System;
     using System.Text;
     using Xunit;
 
@@ -30,6 +31,15 @@ namespace Diwen.BofCrypt.Tests
             var encryptedReport = Encryption.EncryptReport(sessionKey, iv, reportData);
         }
 
-
+        [Fact]
+        public void EncryptedReportTest()
+        {
+            var encryptedKey = new byte[256];
+            var encryptedData = new byte[2048];
+            var encryptedReport = new EncryptedReport();
+            encryptedReport.SessionKey = Convert.ToBase64String(encryptedKey);
+            encryptedReport.OutBuffer = Convert.ToBase64String(encryptedData);
+            var result = encryptedReport.ToXml();
+        }
     }
 }
