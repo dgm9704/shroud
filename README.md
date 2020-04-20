@@ -2,7 +2,7 @@
 
 ## Diwen.BofCrypt
 
-.NET Library with simple functionality for creating a reporting package for sending to Finanssivalvonta / Financial Supervisory  (FIN-FSA)
+.NET Library with very simple functionality for creating a reporting package for sending to Finanssivalvonta / Financial Supervisory  (FIN-FSA)
 
 ### license
 GNU Lesser General Public License v3.0
