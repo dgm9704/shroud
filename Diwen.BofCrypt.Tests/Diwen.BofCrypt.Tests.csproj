@@ -21,7 +21,6 @@
     <Content Include="fin-fsa-pub.xml" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="header.xml" CopyToOutputDirectory="PreserveNewest"/>
     <Content Include="report.xbrl" CopyToOutputDirectory="PreserveNewest"/>
-    <Content Include="report.zip" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
