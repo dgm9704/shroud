@@ -7,6 +7,11 @@ namespace Diwen.BofCrypt.Tests
 
     public class EncryptionTests
     {
+
+        [Fact]
+        public void EncryptReportFile()
+        => Encryption.EncryptReportFile("report.zip", "report.encrypted.xml", "fin-fsa-pub.xml");
+
         [Fact]
         public void GenerateSessionKeyTest()
         {
@@ -43,7 +48,7 @@ namespace Diwen.BofCrypt.Tests
         }
 
         [Fact]
-        public void EncryptReportFile()
+        public void EncryptReportFileSteps()
         {
             var reportData = File.ReadAllBytes("report.zip");
             var publicKey = File.ReadAllText("fin-fsa-pub.xml", Encoding.ASCII);
@@ -56,7 +61,6 @@ namespace Diwen.BofCrypt.Tests
             encryptedReport.SessionKey = Convert.ToBase64String(encryptedKey);
             encryptedReport.OutBuffer = Convert.ToBase64String(encryptedData);
             encryptedReport.ToFile("report.encrypted.xml");
-
         }
 
     }

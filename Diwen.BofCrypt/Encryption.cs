@@ -44,5 +44,21 @@
                 }
             }
         }
+
+        public static void EncryptReportFile(string reportFilePath, string encryptedReportPath, string publicKeyPath)
+        {
+            var reportData = File.ReadAllBytes(reportFilePath);
+            var publicKey = File.ReadAllText(publicKeyPath);
+
+            var (sessionKey, iv) = Encryption.GenerateSessionKey();
+
+            var encryptedKey = Encryption.EncryptWithXmlKey(sessionKey, publicKey);
+            var encryptedData = Encryption.EncryptReport(sessionKey, iv, reportData);
+
+            var encryptedReport = new EncryptedReport();
+            encryptedReport.SessionKey = Convert.ToBase64String(encryptedKey);
+            encryptedReport.OutBuffer = Convert.ToBase64String(encryptedData);
+            encryptedReport.ToFile(encryptedReportPath);
+        }
     }
 }
