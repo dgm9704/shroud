@@ -1,6 +1,7 @@
 namespace Diwen.BofCrypt.Tests
 {
     using System;
+    using System.IO;
     using System.Text;
     using Xunit;
 
@@ -13,11 +14,11 @@ namespace Diwen.BofCrypt.Tests
         }
 
         [Fact]
-        public void EncryptSessionKeyTest()
+        public void EncryptWithXmlKeyTest()
         {
             var plaintextKey = new byte[32];
-            string keydata = "<RSAKeyValue><Modulus>sAXZXDDI8PNwy6ZGDkis/McSbWFdi+B+UV/lyHJRtwwnLHkKvgbms2o6OG2lDqvdU92bmOBrVPn162murwqIyZk/j8rZcOI0wgIUV431prkj39pGBWK4pA2YUDSCvfImlXJXu8tMAwoATJAA5ntJ4lQxA9ODeDhwlKI/yPxl+xUTrloLjsRn5KOrVCiweZO1eZq6ViVKmHCgH8XUSZYtbzmes9UBZgHGLj+L+pLJhF0aFzfc3+Ay1E/iEpus9y4e6rdf8C94wLxBIrE9hOSvm2V/WVZ5Ngg2OsUZO9K9aLl8lLMkVTw+QNDlru3z5xII/IWjjdoxZUEKQPMpYt41qw==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>";
-            var encryptedKey = Encryption.EncryptSessionKey(plaintextKey, keydata);
+            var keydata = File.ReadAllText("fin-fsa-pub.xml", Encoding.ASCII);
+            var encryptedKey = Encryption.EncryptWithXmlKey(plaintextKey, keydata);
         }
 
         [Fact]
@@ -26,8 +27,7 @@ namespace Diwen.BofCrypt.Tests
             var sessionKey = new byte[32];
             var iv = new byte[16];
 
-            var report = "<RSAKeyValue><Modulus>sAXZXDDI8PNwy6ZGDkis/McSbWFdi+B+UV/lyHJRtwwnLHkKvgbms2o6OG2lDqvdU92bmOBrVPn162murwqIyZk/j8rZcOI0wgIUV431prkj39pGBWK4pA2YUDSCvfImlXJXu8tMAwoATJAA5ntJ4lQxA9ODeDhwlKI/yPxl+xUTrloLjsRn5KOrVCiweZO1eZq6ViVKmHCgH8XUSZYtbzmes9UBZgHGLj+L+pLJhF0aFzfc3+Ay1E/iEpus9y4e6rdf8C94wLxBIrE9hOSvm2V/WVZ5Ngg2OsUZO9K9aLl8lLMkVTw+QNDlru3z5xII/IWjjdoxZUEKQPMpYt41qw==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>";
-            var reportData = Encoding.UTF8.GetBytes(report);
+            var reportData = File.ReadAllBytes("report.zip");
             var encryptedReport = Encryption.EncryptReport(sessionKey, iv, reportData);
         }
 
@@ -41,5 +41,23 @@ namespace Diwen.BofCrypt.Tests
             encryptedReport.OutBuffer = Convert.ToBase64String(encryptedData);
             var result = encryptedReport.ToXml();
         }
+
+        [Fact]
+        public void EncryptReportFile()
+        {
+            var reportData = File.ReadAllBytes("report.zip");
+            var publicKey = File.ReadAllText("fin-fsa-pub.xml", Encoding.ASCII);
+            var (sessionKey, iv) = Encryption.GenerateSessionKey();
+
+            var encryptedKey = Encryption.EncryptWithXmlKey(sessionKey, publicKey);
+            var encryptedData = Encryption.EncryptReport(sessionKey, iv, reportData);
+
+            var encryptedReport = new EncryptedReport();
+            encryptedReport.SessionKey = Convert.ToBase64String(encryptedKey);
+            encryptedReport.OutBuffer = Convert.ToBase64String(encryptedData);
+            encryptedReport.ToFile("report.encrypted.xml");
+
+        }
+
     }
 }

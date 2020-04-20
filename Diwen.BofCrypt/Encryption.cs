@@ -16,7 +16,7 @@
             }
         }
 
-        public static byte[] EncryptSessionKey(byte[] sessionKey, string publicKeyXml)
+        public static byte[] EncryptWithXmlKey(byte[] sessionKey, string publicKeyXml)
         {
             using (var rsa = RSA.Create())
             {
