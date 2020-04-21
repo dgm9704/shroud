@@ -4,6 +4,9 @@
 
 .NET Library with very simple functionality for creating a reporting package for sending to Finanssivalvonta / Financial Supervisory Authority (FIN-FSA)
 
+### nuget
+[version 0.1.0](https://www.nuget.org/packages/Diwen.BofCrypt/)
+
 ### usage 
 - acquire public key in xml from FIN-FSA (or use the one included test project)
 - generate XBRL report and XML header file according to instructions from FIN-FSA
