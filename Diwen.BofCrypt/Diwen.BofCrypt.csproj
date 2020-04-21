@@ -15,7 +15,7 @@
     <PackageProjectUrl>https://github.com/dgm9704/shroud</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Description>.NET Library with very simple functionality for creating a reporting package to Finanssivalvonta / Financial Supervisory Authority (FIN-FSA)</Description>
-    <PackageReleaseNotes>Initial release</PackageReleaseNotes>
+    <PackageReleaseNotes></PackageReleaseNotes>
     <Copyright>Copyright 2020 John Nordberg</Copyright>
     <PackageTags>.NET fin-fsa encryption packaging xbrl xml</PackageTags>
   </PropertyGroup>
