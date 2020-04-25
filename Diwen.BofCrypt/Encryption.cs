@@ -66,14 +66,14 @@ namespace Diwen.BofCrypt
             }
         }
 
-        public static void EncryptReportFile(string reportFilePath, string encryptedReportPath, string publicKeyPath)
+        public static void EncryptReportFile(string reportFilePath, string encryptedReportPath, string publicKeyXmlPath)
         {
             var reportData = File.ReadAllBytes(reportFilePath);
-            var publicKey = File.ReadAllText(publicKeyPath);
+            var publicKeyXml = File.ReadAllText(publicKeyXmlPath);
 
             var (sessionKey, iv) = Encryption.GenerateSessionKey();
 
-            var encryptedKey = Encryption.EncryptWithXmlKey(sessionKey, publicKey);
+            var encryptedKey = Encryption.EncryptWithXmlKey(sessionKey, publicKeyXml);
             var encryptedData = Encryption.EncryptReport(sessionKey, iv, reportData);
 
             var encryptedReport = new EncryptedReport();
@@ -82,25 +82,24 @@ namespace Diwen.BofCrypt
             encryptedReport.ToFile(encryptedReportPath);
         }
 
-        public static void DecryptReportFile(string encryptedReportfilePath, string privateKeyPath)
+        public static void DecryptReportFile(string encryptedReportfilePath, string privateKeyXmlPath)
         {
             var encryptedReport = EncryptedReport.FromFile(encryptedReportfilePath);
             var encryptedSessionKey = Convert.FromBase64String(encryptedReport.SessionKey);
-            var decryptedSessionKey = DecryptSessionKey(encryptedSessionKey,privateKeyPath);
+            var privateKeyXml = File.ReadAllText(privateKeyXmlPath);
+
+            var decryptedSessionKey = DecryptWithXmlKey(encryptedSessionKey, privateKeyXml);
             var outbuffer = Convert.FromBase64String(encryptedReport.OutBuffer);
 
         }
 
-        private static byte[] DecryptSessionKey(byte[] encryptedSessionKey, string privateKeyPath)
+        public static byte[] DecryptWithXmlKey(byte[] encryptedSessionKey, string privateKeyXml)
         {
-                       using (var rsa = RSA.Create())
+            using (var rsa = RSA.Create())
             {
-                rsa.FromXmlString(publicKeyXml);
-                return rsa.Encrypt(sessionKey, RSAEncryptionPadding.Pkcs1);
+                rsa.FromXmlString(privateKeyXml);
+                return rsa.Decrypt(encryptedSessionKey, RSAEncryptionPadding.Pkcs1);
             }
-            var symmetricKey = rsa.Decrypt(encryptedSessionKey, false);
-            //symmetricIV = rsa.Decrypt(encryptedSymmetricIV , false);
-            return symmetricKey;
         }
     }
 }

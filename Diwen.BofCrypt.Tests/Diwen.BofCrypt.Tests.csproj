@@ -18,9 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="fin-fsa-pub.xml" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="header.xml" CopyToOutputDirectory="PreserveNewest"/>
-    <Content Include="report.xbrl" CopyToOutputDirectory="PreserveNewest"/>
+    <Content Include="keys/*" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="data/*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

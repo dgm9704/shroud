@@ -25,20 +25,20 @@ namespace Diwen.BofCrypt.Tests
 
         [Fact]
         public void CreateReportPackageTest()
-        => ReportPackage.Create("fin-fsa-pub.xml", "reportpackage.zip", "report.xbrl", "header.xml");
+        => ReportPackage.Create("keys/fin-fsa-pub.xml", "reportpackage.zip", "data/report.xbrl", "data/header.xml");
 
         [Fact]
         public void CreateReportPackageSteps()
         {
-            Helper.ZipFiles("report.zip", "report.xbrl");
-            Encryption.EncryptReportFile("report.zip", "report.encrypted.xml", "fin-fsa-pub.xml");
-            Encryption.EncryptReportFile("header.xml", "header.encrypted.xml", "fin-fsa-pub.xml");
+            Helper.ZipFiles("report.zip", "data/report.xbrl");
+            Encryption.EncryptReportFile("report.zip", "report.encrypted.xml", "keys/fin-fsa-pub.xml");
+            Encryption.EncryptReportFile("data/header.xml", "header.encrypted.xml", "keys/fin-fsa-pub.xml");
             Helper.ZipFiles("reportpackage.zip", "report.encrypted.xml", "header.encrypted.xml");
         }
 
         [Fact]
         public void EncryptReportFile()
-        => Encryption.EncryptReportFile("header.xml", "header.encrypted.xml", "fin-fsa-pub.xml");
+        => Encryption.EncryptReportFile("data/header.xml", "header.encrypted.xml", "keys/fin-fsa-pub.xml");
 
         [Fact]
         public void GenerateSessionKeyTest()
@@ -50,7 +50,7 @@ namespace Diwen.BofCrypt.Tests
         public void EncryptWithXmlKeyTest()
         {
             var plaintextKey = new byte[32];
-            var keydata = File.ReadAllText("fin-fsa-pub.xml", Encoding.ASCII);
+            var keydata = File.ReadAllText("keys/fin-fsa-pub.xml", Encoding.ASCII);
             var encryptedKey = Encryption.EncryptWithXmlKey(plaintextKey, keydata);
         }
 
@@ -60,7 +60,7 @@ namespace Diwen.BofCrypt.Tests
             var sessionKey = new byte[32];
             var iv = new byte[16];
 
-            var reportData = File.ReadAllBytes("header.xml");
+            var reportData = File.ReadAllBytes("data/header.xml");
             var encryptedReport = Encryption.EncryptReport(sessionKey, iv, reportData);
         }
 
@@ -78,8 +78,8 @@ namespace Diwen.BofCrypt.Tests
         [Fact]
         public void EncryptReportFileSteps()
         {
-            var reportData = File.ReadAllBytes("header.xml");
-            var publicKey = File.ReadAllText("fin-fsa-pub.xml", Encoding.ASCII);
+            var reportData = File.ReadAllBytes("data/header.xml");
+            var publicKey = File.ReadAllText("keys/fin-fsa-pub.xml", Encoding.ASCII);
             var (sessionKey, iv) = Encryption.GenerateSessionKey();
 
             var encryptedKey = Encryption.EncryptWithXmlKey(sessionKey, publicKey);
@@ -89,6 +89,18 @@ namespace Diwen.BofCrypt.Tests
             encryptedReport.SessionKey = Convert.ToBase64String(encryptedKey);
             encryptedReport.OutBuffer = Convert.ToBase64String(encryptedData);
             encryptedReport.ToFile("header.encrypted.xml");
+        }
+
+        [Fact]
+        public void DecryptSessionKey()
+        {
+            var sessionKey = new byte[32];
+            var publicKeyXml = File.ReadAllText("keys/public.xml", Encoding.ASCII);
+            var encryptedKey = Encryption.EncryptWithXmlKey(sessionKey, publicKeyXml);
+
+            var privateKeyXml = File.ReadAllText("keys/private.xml", Encoding.ASCII);
+            var decryptedKey = Encryption.DecryptWithXmlKey(encryptedKey, privateKeyXml);
+
         }
 
     }
