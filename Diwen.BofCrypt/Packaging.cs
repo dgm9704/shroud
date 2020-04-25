@@ -21,17 +21,35 @@
 
 namespace Diwen.BofCrypt
 {
+    using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.IO.Compression;
+    using System.Linq;
 
     public static class Packaging
     {
-        public static void ZipFiles(string archive, params string[] files)
+        public static void ZipFiles(string archivePath, params string[] files)
         {
-            using (var stream = File.Create(archive))
+            Directory.CreateDirectory(Path.GetDirectoryName(archivePath));
+            using (var stream = File.Create(archivePath))
             using (var zip = new ZipArchive(stream, ZipArchiveMode.Create))
                 foreach (var file in files)
                     zip.CreateEntryFromFile(file, Path.GetFileName(file));
+        }
+
+        internal static string[] UnzipFiles(string archive, string outputPath)
+        {
+            var files = new HashSet<string>();
+            using (var stream = File.OpenRead(archive))
+            using (var zip = new ZipArchive(stream, ZipArchiveMode.Read))
+                foreach (var entry in zip.Entries)
+                {
+                    var extractedPath = Path.Combine(outputPath, entry.Name);
+                    entry.ExtractToFile(extractedPath, true);
+                    files.Add(extractedPath);
+                }
+            return files.ToArray();
         }
     }
 }

@@ -21,6 +21,7 @@
 
 namespace Diwen.BofCrypt
 {
+    using System;
     using System.IO;
 
     public static class ReportPackage
@@ -38,6 +39,23 @@ namespace Diwen.BofCrypt
 
             Packaging.ZipFiles(reportPackagePath, encryptedReportfilePath, encryptedHeaderfilePath);
 
+        }
+
+        public static void Unpack(string privateKeyXmlFile, string zippedReportPackagePath, string outputPath)
+        {
+            var unzippedFiles = Packaging.UnzipFiles(zippedReportPackagePath, outputPath);
+
+
+            // var zippedReportfilePath = Path.ChangeExtension(reportfilePath, ".zip");
+            // Packaging.ZipFiles(zippedReportfilePath, reportfilePath);
+
+            // var encryptedReportfilePath = Path.ChangeExtension(reportfilePath, ".encrypted.xml");
+            // Encryption.EncryptReportFile(zippedReportfilePath, encryptedReportfilePath, publicKeyPath);
+
+            // var encryptedHeaderfilePath = Path.ChangeExtension(headerFilePath, ".encrypted.xml");
+            // Encryption.EncryptReportFile(headerFilePath, encryptedHeaderfilePath, publicKeyPath);
+
+            // Packaging.ZipFiles(zippedReportPackagePath, encryptedReportfilePath, encryptedHeaderfilePath);
         }
     }
 }

@@ -25,7 +25,11 @@ namespace Diwen.BofCrypt.Tests
 
         [Fact]
         public void CreateReportPackageTest()
-        => ReportPackage.Create("keys/fin-fsa-pub.xml", "reportpackage.zip", "data/report.xbrl", "data/header.xml");
+        => ReportPackage.Create("keys/public.xml", "output/reportpackage.zip", "data/report.xbrl", "data/header.xml");
+
+        [Fact]
+        public void UnpackReportPackageTest()
+        => ReportPackage.Unpack("keys/private.xml", "output/reportpackage.zip", "output");
 
         [Fact]
         public void CreateReportPackageSteps()
