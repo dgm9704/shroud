@@ -24,7 +24,6 @@ namespace Diwen.BofCrypt
     using System;
     using System.IO;
     using System.Security.Cryptography;
-    using System.Text;
 
     public class Encryption
     {
@@ -47,23 +46,12 @@ namespace Diwen.BofCrypt
             }
         }
 
-        public static byte[] EncryptReport(byte[] key, byte[] iv, byte[] report)
+        public static byte[] DecryptWithXmlKey(byte[] encryptedSessionKey, string privateKeyXml)
         {
-            using (var aes = Aes.Create())
+            using (var rsa = RSA.Create())
             {
-                aes.KeySize = 256;
-                aes.Key = key;
-                aes.IV = iv;
-                using (var encryptor = aes.CreateEncryptor(key, iv))
-                using (var resultStream = new MemoryStream())
-                {
-                    resultStream.Write(iv, 0, iv.Length);
-                    using (var aesStream = new CryptoStream(resultStream, encryptor, CryptoStreamMode.Write))
-                    using (var plainStream = new MemoryStream(report))
-                        plainStream.CopyTo(aesStream);
-
-                    return resultStream.ToArray();
-                }
+                rsa.FromXmlString(privateKeyXml);
+                return rsa.Decrypt(encryptedSessionKey, RSAEncryptionPadding.Pkcs1);
             }
         }
 
@@ -95,40 +83,32 @@ namespace Diwen.BofCrypt
             return decryptedContent;
         }
 
+        public static byte[] EncryptReport(byte[] key, byte[] iv, byte[] report)
+        {
+            byte[] result;
+            byte[] encryptedData;
+            var ivLength = iv.Length;
+
+            using (var aes = Aes.Create())
+            using (var encryptor = aes.CreateEncryptor(key, iv))
+                encryptedData = encryptor.TransformFinalBlock(report, 0, report.Length);
+
+            result = new byte[ivLength + encryptedData.Length];
+            Array.Copy(iv, result, ivLength);
+            Array.Copy(encryptedData, 0, result, ivLength, encryptedData.Length);
+
+            return result;
+        }
+
         private static byte[] DecryptReport(byte[] key, byte[] data)
         {
             int ivLength = 16;
-            //byte[] result;
+            var iv = new byte[ivLength];
+            Array.Copy(data, iv, ivLength);
+
             using (var aes = Aes.Create())
-            {
-                aes.Key = key;
-                var iv = new byte[ivLength];
-                Array.Copy(data, iv, ivLength);
-                aes.IV = iv;
-
-                using (var decryptor = aes.CreateDecryptor(key, iv))
-                    return decryptor.TransformFinalBlock(data, ivLength, data.Length - ivLength);
-
-                // using (MemoryStream encryptedStream = new MemoryStream(data, ivLength, data.Length - ivLength))
-                // using (CryptoStream decryptCryptoStream = new CryptoStream(encryptedStream, decryptor, CryptoStreamMode.Read))
-                // using (MemoryStream decryptedStream = new MemoryStream())
-                // {
-                //     decryptCryptoStream.CopyTo(decryptedStream);
-                //     return decryptedStream.ToArray();
-                // }
-                // //using (StreamReader decryptReader = new StreamReader(decryptCryptoStream))
-                // //    result = decryptReader.ReadToEnd(); // returns a string
-            }
-            //            return result; // the content might zipped so return it as bytes
-        }
-
-        public static byte[] DecryptWithXmlKey(byte[] encryptedSessionKey, string privateKeyXml)
-        {
-            using (var rsa = RSA.Create())
-            {
-                rsa.FromXmlString(privateKeyXml);
-                return rsa.Decrypt(encryptedSessionKey, RSAEncryptionPadding.Pkcs1);
-            }
+            using (var decryptor = aes.CreateDecryptor(key, iv))
+                return decryptor.TransformFinalBlock(data, ivLength, data.Length - ivLength);
         }
     }
 }
