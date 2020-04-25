@@ -107,15 +107,17 @@ namespace Diwen.BofCrypt
                 aes.IV = iv;
 
                 using (var decryptor = aes.CreateDecryptor(key, iv))
-                using (MemoryStream encryptedStream = new MemoryStream(data, ivLength, data.Length - ivLength))
-                using (CryptoStream decryptCryptoStream = new CryptoStream(encryptedStream, decryptor, CryptoStreamMode.Read))
-                using (MemoryStream decryptedStream = new MemoryStream())
-                {
-                    decryptCryptoStream.CopyTo(decryptedStream);
-                    return decryptedStream.ToArray();
-                }
-                //using (StreamReader decryptReader = new StreamReader(decryptCryptoStream))
-                //    result = decryptReader.ReadToEnd(); // returns a string
+                    return decryptor.TransformFinalBlock(data, ivLength, data.Length - ivLength);
+
+                // using (MemoryStream encryptedStream = new MemoryStream(data, ivLength, data.Length - ivLength))
+                // using (CryptoStream decryptCryptoStream = new CryptoStream(encryptedStream, decryptor, CryptoStreamMode.Read))
+                // using (MemoryStream decryptedStream = new MemoryStream())
+                // {
+                //     decryptCryptoStream.CopyTo(decryptedStream);
+                //     return decryptedStream.ToArray();
+                // }
+                // //using (StreamReader decryptReader = new StreamReader(decryptCryptoStream))
+                // //    result = decryptReader.ReadToEnd(); // returns a string
             }
             //            return result; // the content might zipped so return it as bytes
         }

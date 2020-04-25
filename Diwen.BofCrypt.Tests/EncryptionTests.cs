@@ -17,6 +17,7 @@ namespace Diwen.BofCrypt.Tests
 {
     using System;
     using System.IO;
+    using System.Linq;
     using System.Text;
     using Xunit;
 
@@ -24,8 +25,19 @@ namespace Diwen.BofCrypt.Tests
     {
 
         [Fact]
+        public void EndToEndTest()
+        {
+            var inputFiles = new[] { "data/header.xml", "data/report.xbrl" };
+            ReportPackage.Create("keys/public.xml", "output/reportpackage.zip", inputFiles.First(), inputFiles.Last());
+            var outputFiles = ReportPackage.Unpack("keys/private.xml", "output/reportpackage.zip", "output");
+            var expectedOutputFiles = inputFiles.Select(f => f.Replace("data/", "output/")).ToArray();
+            Assert.Equal(expectedOutputFiles, outputFiles);
+        }
+
+
+        [Fact]
         public void CreateReportPackageTest()
-        => ReportPackage.Create("keys/public.xml", "output/reportpackage.zip", "data/report.xbrl", "data/header.xml");
+        => ReportPackage.Create("keys/public.xml", "output/reportpackage.zip", "data/header.xml", "data/report.xbrl");
 
         [Fact]
         public void UnpackReportPackageTest()
@@ -35,9 +47,9 @@ namespace Diwen.BofCrypt.Tests
         public void CreateReportPackageSteps()
         {
             Packaging.ZipFiles("report.zip", "data/report.xbrl");
-            Encryption.EncryptReportFile("report.zip", "report.encrypted.xml", "keys/fin-fsa-pub.xml");
             Encryption.EncryptReportFile("data/header.xml", "header.encrypted.xml", "keys/fin-fsa-pub.xml");
-            Packaging.ZipFiles("reportpackage.zip", "report.encrypted.xml", "header.encrypted.xml");
+            Encryption.EncryptReportFile("report.zip", "report.encrypted.xml", "keys/fin-fsa-pub.xml");
+            Packaging.ZipFiles("reportpackage.zip", "header.encrypted.xml", "report.encrypted.xml");
         }
 
         [Fact]

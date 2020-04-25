@@ -21,13 +21,13 @@
 
 namespace Diwen.BofCrypt
 {
-    using System;
+    using System.Collections.Generic;
     using System.IO;
     using System.Linq;
 
     public static class ReportPackage
     {
-        public static void Create(string publicKeyPath, string reportPackagePath, string reportfilePath, string headerFilePath)
+        public static void Create(string publicKeyPath, string reportPackagePath, string headerFilePath, string reportfilePath)
         {
             var zippedReportfilePath = Path.ChangeExtension(reportfilePath, ".zip");
             Packaging.ZipFiles(zippedReportfilePath, reportfilePath);
@@ -42,30 +42,27 @@ namespace Diwen.BofCrypt
 
         }
 
-        public static void Unpack(string privateKeyXmlPath, string zippedReportPackagePath, string outputPath)
+        public static string[] Unpack(string privateKeyXmlPath, string zippedReportPackagePath, string outputPath)
         {
+            var files = new HashSet<string>();
             var unzippedFiles = Packaging.UnzipFiles(zippedReportPackagePath, outputPath);
 
+            // Header has contents as text
             var encryptedHeaderfilePath = unzippedFiles.Single(f => Path.GetFileName(f).StartsWith("header"));
             var decryptedHeaderContent = Encryption.DecryptReportFile(encryptedHeaderfilePath, privateKeyXmlPath);
             var decryptedHeaderFilePath = encryptedHeaderfilePath.Replace(".encrypted.xml", ".xml"); // ChangeExtension can't handle it
             File.WriteAllBytes(decryptedHeaderFilePath, decryptedHeaderContent);
 
+            files.Add(decryptedHeaderFilePath);
+            // Actual report is zipped before encryption
             var encryptedReportfilePath = unzippedFiles.Single(f => !Path.GetFileName(f).StartsWith("header"));
-            var decryptedReportContent = Encryption.DecryptReportFile(encryptedReportfilePath, privateKeyXmlPath);
-            var decryptedReportFilePath = encryptedReportfilePath.Replace(".encrypted.xml", ".xml"); // ChangeExtension can't handle it
-            File.WriteAllBytes(decryptedReportFilePath, decryptedReportContent);
+            var zippedReportContent = Encryption.DecryptReportFile(encryptedReportfilePath, privateKeyXmlPath);
+            var zippedReportFilePath = encryptedReportfilePath.Replace(".encrypted.xml", ".zip"); // ChangeExtension can't handle it
+            File.WriteAllBytes(zippedReportFilePath, zippedReportContent);
 
-            // var zippedReportfilePath = Path.ChangeExtension(reportfilePath, ".zip");
-            // Packaging.ZipFiles(zippedReportfilePath, reportfilePath);
-
-            // var encryptedReportfilePath = Path.ChangeExtension(reportfilePath, ".encrypted.xml");
-            // Encryption.EncryptReportFile(zippedReportfilePath, encryptedReportfilePath, publicKeyPath);
-
-            // var encryptedHeaderfilePath = Path.ChangeExtension(headerFilePath, ".encrypted.xml");
-            // Encryption.EncryptReportFile(headerFilePath, encryptedHeaderfilePath, publicKeyPath);
-
-            // Packaging.ZipFiles(zippedReportPackagePath, encryptedReportfilePath, encryptedHeaderfilePath);
+            var decryptedReportFilePath = Packaging.UnzipFiles(zippedReportFilePath, "output").Single(); // this should be xbrl
+            files.Add(decryptedReportFilePath);
+            return files.ToArray();
         }
     }
 }

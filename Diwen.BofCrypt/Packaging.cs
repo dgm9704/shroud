@@ -31,7 +31,10 @@ namespace Diwen.BofCrypt
     {
         public static void ZipFiles(string archivePath, params string[] files)
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(archivePath));
+            var directory = Path.GetDirectoryName(archivePath);
+            if (!string.IsNullOrWhiteSpace(directory))
+                Directory.CreateDirectory(directory);
+
             using (var stream = File.Create(archivePath))
             using (var zip = new ZipArchive(stream, ZipArchiveMode.Create))
                 foreach (var file in files)
