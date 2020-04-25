@@ -67,7 +67,7 @@ namespace Diwen.BofCrypt.Tests
         {
             var plaintextKey = new byte[32];
             var keydata = File.ReadAllText("keys/fin-fsa-pub.xml", Encoding.ASCII);
-            var encryptedKey = Encryption.EncryptWithXmlKey(plaintextKey, keydata);
+            var encryptedKey = Encryption.EncryptSessionKey(plaintextKey, keydata);
         }
 
         [Fact]
@@ -98,7 +98,7 @@ namespace Diwen.BofCrypt.Tests
             var publicKey = File.ReadAllText("keys/fin-fsa-pub.xml", Encoding.ASCII);
             var (sessionKey, iv) = Encryption.GenerateSessionKey();
 
-            var encryptedKey = Encryption.EncryptWithXmlKey(sessionKey, publicKey);
+            var encryptedKey = Encryption.EncryptSessionKey(sessionKey, publicKey);
             var encryptedData = Encryption.EncryptReport(sessionKey, iv, reportData);
 
             var encryptedReport = new EncryptedReport();
@@ -112,10 +112,10 @@ namespace Diwen.BofCrypt.Tests
         {
             var sessionKey = new byte[32];
             var publicKeyXml = File.ReadAllText("keys/public.xml", Encoding.ASCII);
-            var encryptedKey = Encryption.EncryptWithXmlKey(sessionKey, publicKeyXml);
+            var encryptedKey = Encryption.EncryptSessionKey(sessionKey, publicKeyXml);
 
             var privateKeyXml = File.ReadAllText("keys/private.xml", Encoding.ASCII);
-            var decryptedKey = Encryption.DecryptWithXmlKey(encryptedKey, privateKeyXml);
+            var decryptedKey = Encryption.DecryptSessionKey(encryptedKey, privateKeyXml);
 
         }
 

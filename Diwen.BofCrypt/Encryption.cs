@@ -37,21 +37,21 @@ namespace Diwen.BofCrypt
             }
         }
 
-        public static byte[] EncryptWithXmlKey(byte[] sessionKey, string publicKeyXml)
+        public static byte[] EncryptSessionKey(byte[] data, string publicKeyXml)
         {
             using (var rsa = RSA.Create())
             {
                 rsa.FromXmlString(publicKeyXml);
-                return rsa.Encrypt(sessionKey, RSAEncryptionPadding.Pkcs1);
+                return rsa.Encrypt(data, RSAEncryptionPadding.Pkcs1);
             }
         }
 
-        public static byte[] DecryptWithXmlKey(byte[] encryptedSessionKey, string privateKeyXml)
+        public static byte[] DecryptSessionKey(byte[] data, string privateKeyXml)
         {
             using (var rsa = RSA.Create())
             {
                 rsa.FromXmlString(privateKeyXml);
-                return rsa.Decrypt(encryptedSessionKey, RSAEncryptionPadding.Pkcs1);
+                return rsa.Decrypt(data, RSAEncryptionPadding.Pkcs1);
             }
         }
 
@@ -62,7 +62,7 @@ namespace Diwen.BofCrypt
 
             var (sessionKey, iv) = Encryption.GenerateSessionKey();
 
-            var encryptedKey = Encryption.EncryptWithXmlKey(sessionKey, publicKeyXml);
+            var encryptedKey = Encryption.EncryptSessionKey(sessionKey, publicKeyXml);
             var encryptedData = Encryption.EncryptReport(sessionKey, iv, reportData);
 
             var encryptedReport = new EncryptedReport();
@@ -77,13 +77,13 @@ namespace Diwen.BofCrypt
             var encryptedSessionKey = Convert.FromBase64String(encryptedReport.SessionKey);
             var privateKeyXml = File.ReadAllText(privateKeyXmlPath);
 
-            var decryptedSessionKey = DecryptWithXmlKey(encryptedSessionKey, privateKeyXml);
+            var decryptedSessionKey = DecryptSessionKey(encryptedSessionKey, privateKeyXml);
             var encryptedContent = Convert.FromBase64String(encryptedReport.OutBuffer);
             var decryptedContent = Encryption.DecryptReport(decryptedSessionKey, encryptedContent);
             return decryptedContent;
         }
 
-        public static byte[] EncryptReport(byte[] key, byte[] iv, byte[] report)
+        public static byte[] EncryptReport(byte[] key, byte[] iv, byte[] data)
         {
             byte[] result;
             byte[] encryptedData;
@@ -91,7 +91,7 @@ namespace Diwen.BofCrypt
 
             using (var aes = Aes.Create())
             using (var encryptor = aes.CreateEncryptor(key, iv))
-                encryptedData = encryptor.TransformFinalBlock(report, 0, report.Length);
+                encryptedData = encryptor.TransformFinalBlock(data, 0, data.Length);
 
             result = new byte[ivLength + encryptedData.Length];
             Array.Copy(iv, result, ivLength);
