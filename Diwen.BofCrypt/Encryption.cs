@@ -81,5 +81,26 @@ namespace Diwen.BofCrypt
             encryptedReport.OutBuffer = Convert.ToBase64String(encryptedData);
             encryptedReport.ToFile(encryptedReportPath);
         }
+
+        public static void DecryptReportFile(string encryptedReportfilePath, string privateKeyPath)
+        {
+            var encryptedReport = EncryptedReport.FromFile(encryptedReportfilePath);
+            var encryptedSessionKey = Convert.FromBase64String(encryptedReport.SessionKey);
+            var decryptedSessionKey = DecryptSessionKey(encryptedSessionKey,privateKeyPath);
+            var outbuffer = Convert.FromBase64String(encryptedReport.OutBuffer);
+
+        }
+
+        private static byte[] DecryptSessionKey(byte[] encryptedSessionKey, string privateKeyPath)
+        {
+                       using (var rsa = RSA.Create())
+            {
+                rsa.FromXmlString(publicKeyXml);
+                return rsa.Encrypt(sessionKey, RSAEncryptionPadding.Pkcs1);
+            }
+            var symmetricKey = rsa.Decrypt(encryptedSessionKey, false);
+            //symmetricIV = rsa.Decrypt(encryptedSymmetricIV , false);
+            return symmetricKey;
+        }
     }
 }
