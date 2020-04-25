@@ -30,10 +30,10 @@ namespace Diwen.BofCrypt.Tests
         [Fact]
         public void CreateReportPackageSteps()
         {
-            Helper.ZipFiles("report.zip", "data/report.xbrl");
+            Packaging.ZipFiles("report.zip", "data/report.xbrl");
             Encryption.EncryptReportFile("report.zip", "report.encrypted.xml", "keys/fin-fsa-pub.xml");
             Encryption.EncryptReportFile("data/header.xml", "header.encrypted.xml", "keys/fin-fsa-pub.xml");
-            Helper.ZipFiles("reportpackage.zip", "report.encrypted.xml", "header.encrypted.xml");
+            Packaging.ZipFiles("reportpackage.zip", "report.encrypted.xml", "header.encrypted.xml");
         }
 
         [Fact]

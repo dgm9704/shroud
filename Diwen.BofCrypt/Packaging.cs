@@ -24,7 +24,7 @@ namespace Diwen.BofCrypt
     using System.IO;
     using System.IO.Compression;
 
-    public static class Helper
+    public static class Packaging
     {
         public static void ZipFiles(string archive, params string[] files)
         {

@@ -28,7 +28,7 @@ namespace Diwen.BofCrypt
         public static void Create(string publicKeyPath, string reportPackagePath, string reportfilePath, string headerFilePath)
         {
             var zippedReportfilePath = Path.ChangeExtension(reportfilePath, ".zip");
-            Helper.ZipFiles(zippedReportfilePath, reportfilePath);
+            Packaging.ZipFiles(zippedReportfilePath, reportfilePath);
 
             var encryptedReportfilePath = Path.ChangeExtension(reportfilePath, ".encrypted.xml");
             Encryption.EncryptReportFile(zippedReportfilePath, encryptedReportfilePath, publicKeyPath);
@@ -36,7 +36,7 @@ namespace Diwen.BofCrypt
             var encryptedHeaderfilePath = Path.ChangeExtension(headerFilePath, ".encrypted.xml");
             Encryption.EncryptReportFile(headerFilePath, encryptedHeaderfilePath, publicKeyPath);
 
-            Helper.ZipFiles(reportPackagePath, encryptedReportfilePath, encryptedHeaderfilePath);
+            Packaging.ZipFiles(reportPackagePath, encryptedReportfilePath, encryptedHeaderfilePath);
 
         }
     }
