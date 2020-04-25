@@ -136,5 +136,4 @@ namespace Diwen.BofCrypt
         => ToXmlDocument().OuterXml;
 
     }
-
 }

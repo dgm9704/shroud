@@ -116,8 +116,6 @@ namespace Diwen.BofCrypt.Tests
 
             var privateKeyXml = File.ReadAllText("keys/private.xml", Encoding.ASCII);
             var decryptedKey = Encryption.DecryptSessionKey(encryptedKey, privateKeyXml);
-
         }
-
     }
 }
