@@ -24,6 +24,7 @@ namespace Diwen.BofCrypt
     using System;
     using System.IO;
     using System.Security.Cryptography;
+    using System.Text;
 
     public class Encryption
     {
@@ -82,15 +83,41 @@ namespace Diwen.BofCrypt
             encryptedReport.ToFile(encryptedReportPath);
         }
 
-        public static void DecryptReportFile(string encryptedReportfilePath, string privateKeyXmlPath)
+        public static byte[] DecryptReportFile(string encryptedReportfilePath, string privateKeyXmlPath)
         {
             var encryptedReport = EncryptedReport.FromFile(encryptedReportfilePath);
             var encryptedSessionKey = Convert.FromBase64String(encryptedReport.SessionKey);
             var privateKeyXml = File.ReadAllText(privateKeyXmlPath);
 
             var decryptedSessionKey = DecryptWithXmlKey(encryptedSessionKey, privateKeyXml);
-            var outbuffer = Convert.FromBase64String(encryptedReport.OutBuffer);
+            var encryptedContent = Convert.FromBase64String(encryptedReport.OutBuffer);
+            var decryptedContent = Encryption.DecryptReport(decryptedSessionKey, encryptedContent);
+            return decryptedContent;
+        }
 
+        private static byte[] DecryptReport(byte[] key, byte[] data)
+        {
+            int ivLength = 16;
+            //byte[] result;
+            using (var aes = Aes.Create())
+            {
+                aes.Key = key;
+                var iv = new byte[ivLength];
+                Array.Copy(data, iv, ivLength);
+                aes.IV = iv;
+
+                using (var decryptor = aes.CreateDecryptor(key, iv))
+                using (MemoryStream encryptedStream = new MemoryStream(data, ivLength, data.Length - ivLength))
+                using (CryptoStream decryptCryptoStream = new CryptoStream(encryptedStream, decryptor, CryptoStreamMode.Read))
+                using (MemoryStream decryptedStream = new MemoryStream())
+                {
+                    decryptCryptoStream.CopyTo(decryptedStream);
+                    return decryptedStream.ToArray();
+                }
+                //using (StreamReader decryptReader = new StreamReader(decryptCryptoStream))
+                //    result = decryptReader.ReadToEnd(); // returns a string
+            }
+            //            return result; // the content might zipped so return it as bytes
         }
 
         public static byte[] DecryptWithXmlKey(byte[] encryptedSessionKey, string privateKeyXml)
