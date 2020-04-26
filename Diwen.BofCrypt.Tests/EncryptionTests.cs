@@ -35,87 +35,87 @@ namespace Diwen.BofCrypt.Tests
         }
 
 
-        [Fact]
-        public void CreateReportPackageTest()
-        => ReportPackage.Create("keys/public.xml", "output/reportpackage.zip", "data/header.xml", "data/report.xbrl");
+        //     [Fact]
+        //     public void CreateReportPackageTest()
+        //     => ReportPackage.Create("keys/public.xml", "output/reportpackage.zip", "data/header.xml", "data/report.xbrl");
 
-        [Fact]
-        public void UnpackReportPackageTest()
-        => ReportPackage.Unpack("keys/private.xml", "output/reportpackage.zip", "output");
+        //     [Fact]
+        //     public void UnpackReportPackageTest()
+        //     => ReportPackage.Unpack("keys/private.xml", "output/reportpackage.zip", "output");
 
-        [Fact]
-        public void CreateReportPackageSteps()
-        {
-            Packaging.ZipFiles("report.zip", "data/report.xbrl");
-            Encryption.EncryptReportFile("data/header.xml", "header.encrypted.xml", "keys/fin-fsa-pub.xml");
-            Encryption.EncryptReportFile("report.zip", "report.encrypted.xml", "keys/fin-fsa-pub.xml");
-            Packaging.ZipFiles("reportpackage.zip", "header.encrypted.xml", "report.encrypted.xml");
-        }
+        //     [Fact]
+        //     public void CreateReportPackageSteps()
+        //     {
+        //         Packaging.ZipFiles("report.zip", "data/report.xbrl");
+        //         Encryption.EncryptReportFile("data/header.xml", "header.encrypted.xml", "keys/fin-fsa-pub.xml");
+        //         Encryption.EncryptReportFile("report.zip", "report.encrypted.xml", "keys/fin-fsa-pub.xml");
+        //         Packaging.ZipFiles("reportpackage.zip", "header.encrypted.xml", "report.encrypted.xml");
+        //     }
 
-        [Fact]
-        public void EncryptReportFile()
-        => Encryption.EncryptReportFile("data/header.xml", "header.encrypted.xml", "keys/fin-fsa-pub.xml");
+        //     [Fact]
+        //     public void EncryptReportFile()
+        //     => Encryption.EncryptReportFile("data/header.xml", "header.encrypted.xml", "keys/fin-fsa-pub.xml");
 
-        [Fact]
-        public void GenerateSessionKeyTest()
-        {
-            var (key, iv) = Encryption.GenerateSessionKey();
-        }
+        //     [Fact]
+        //     public void GenerateSessionKeyTest()
+        //     {
+        //         var (key, iv) = Encryption.GenerateSessionKey();
+        //     }
 
-        [Fact]
-        public void EncryptWithXmlKeyTest()
-        {
-            var plaintextKey = new byte[32];
-            var keydata = File.ReadAllText("keys/fin-fsa-pub.xml", Encoding.ASCII);
-            var encryptedKey = Encryption.EncryptSessionKey(plaintextKey, keydata);
-        }
+        //     [Fact]
+        //     public void EncryptWithXmlKeyTest()
+        //     {
+        //         var plaintextKey = new byte[32];
+        //         var keydata = File.ReadAllText("keys/fin-fsa-pub.xml", Encoding.ASCII);
+        //         var encryptedKey = Encryption.EncryptSessionKey(plaintextKey, keydata);
+        //     }
 
-        [Fact]
-        public void EncryptReportTest()
-        {
-            var sessionKey = new byte[32];
-            var iv = new byte[16];
+        //     [Fact]
+        //     public void EncryptReportTest()
+        //     {
+        //         var sessionKey = new byte[32];
+        //         var iv = new byte[16];
 
-            var reportData = File.ReadAllBytes("data/header.xml");
-            var encryptedReport = Encryption.EncryptReport(sessionKey, iv, reportData);
-        }
+        //         var reportData = File.ReadAllBytes("data/header.xml");
+        //         var encryptedReport = Encryption.EncryptReport(sessionKey, iv, reportData);
+        //     }
 
-        [Fact]
-        public void EncryptedReportTest()
-        {
-            var encryptedKey = new byte[256];
-            var encryptedData = new byte[2048];
-            var encryptedReport = new EncryptedReport();
-            encryptedReport.SessionKey = Convert.ToBase64String(encryptedKey);
-            encryptedReport.OutBuffer = Convert.ToBase64String(encryptedData);
-            var result = encryptedReport.ToXml();
-        }
+        //     [Fact]
+        //     public void EncryptedReportTest()
+        //     {
+        //         var encryptedKey = new byte[256];
+        //         var encryptedData = new byte[2048];
+        //         var encryptedReport = new EncryptedReport();
+        //         encryptedReport.SessionKey = Convert.ToBase64String(encryptedKey);
+        //         encryptedReport.OutBuffer = Convert.ToBase64String(encryptedData);
+        //         var result = encryptedReport.ToXml();
+        //     }
 
-        [Fact]
-        public void EncryptReportFileSteps()
-        {
-            var reportData = File.ReadAllBytes("data/header.xml");
-            var publicKey = File.ReadAllText("keys/fin-fsa-pub.xml", Encoding.ASCII);
-            var (sessionKey, iv) = Encryption.GenerateSessionKey();
+        //     [Fact]
+        //     public void EncryptReportFileSteps()
+        //     {
+        //         var reportData = File.ReadAllBytes("data/header.xml");
+        //         var publicKey = File.ReadAllText("keys/fin-fsa-pub.xml", Encoding.ASCII);
+        //         var (sessionKey, iv) = Encryption.GenerateSessionKey();
 
-            var encryptedKey = Encryption.EncryptSessionKey(sessionKey, publicKey);
-            var encryptedData = Encryption.EncryptReport(sessionKey, iv, reportData);
+        //         var encryptedKey = Encryption.EncryptSessionKey(sessionKey, publicKey);
+        //         var encryptedData = Encryption.EncryptReport(sessionKey, iv, reportData);
 
-            var encryptedReport = new EncryptedReport();
-            encryptedReport.SessionKey = Convert.ToBase64String(encryptedKey);
-            encryptedReport.OutBuffer = Convert.ToBase64String(encryptedData);
-            encryptedReport.ToFile("header.encrypted.xml");
-        }
+        //         var encryptedReport = new EncryptedReport();
+        //         encryptedReport.SessionKey = Convert.ToBase64String(encryptedKey);
+        //         encryptedReport.OutBuffer = Convert.ToBase64String(encryptedData);
+        //         encryptedReport.ToFile("header.encrypted.xml");
+        //     }
 
-        [Fact]
-        public void DecryptSessionKey()
-        {
-            var sessionKey = new byte[32];
-            var publicKeyXml = File.ReadAllText("keys/public.xml", Encoding.ASCII);
-            var encryptedKey = Encryption.EncryptSessionKey(sessionKey, publicKeyXml);
+        //     [Fact]
+        //     public void DecryptSessionKey()
+        //     {
+        //         var sessionKey = new byte[32];
+        //         var publicKeyXml = File.ReadAllText("keys/public.xml", Encoding.ASCII);
+        //         var encryptedKey = Encryption.EncryptSessionKey(sessionKey, publicKeyXml);
 
-            var privateKeyXml = File.ReadAllText("keys/private.xml", Encoding.ASCII);
-            var decryptedKey = Encryption.DecryptSessionKey(encryptedKey, privateKeyXml);
-        }
+        //         var privateKeyXml = File.ReadAllText("keys/private.xml", Encoding.ASCII);
+        //         var decryptedKey = Encryption.DecryptSessionKey(encryptedKey, privateKeyXml);
+        //     }
     }
 }
