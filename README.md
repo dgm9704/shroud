@@ -1,5 +1,5 @@
 # shroud
-
+![.NET Core](https://github.com/dgm9704/shroud/workflows/.NET%20Core/badge.svg)
 ## Diwen.BofCrypt
 
 .NET Library with very simple functionality for creating a reporting package for sending to Finanssivalvonta / Financial Supervisory Authority (FIN-FSA)
