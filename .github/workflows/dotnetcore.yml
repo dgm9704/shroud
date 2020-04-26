@@ -18,8 +18,8 @@ jobs:
       with:
         dotnet-version: 3.1.101
     - name: Install dependencies
-      run: dotnet restore Diwen.BofCrypt.Tests/Diwen.Bofcrypt.Tests.csproj
+      run: dotnet restore Diwen.BofCrypt.Tests/Diwen.BofCrypt.Tests.csproj
     - name: Build
-      run: dotnet build --configuration Release --no-restore Diwen.BofCrypt.Tests/Diwen.Bofcrypt.Tests.csproj
+      run: dotnet build --configuration Release --no-restore Diwen.BofCrypt.Tests/Diwen.BofCrypt.Tests.csproj
     - name: Test
-      run: dotnet test --no-restore --verbosity normal Diwen.BofCrypt.Tests/Diwen.Bofcrypt.Tests.csproj
+      run: dotnet test --no-restore --verbosity normal Diwen.BofCrypt.Tests/Diwen.BofCrypt.Tests.csproj
