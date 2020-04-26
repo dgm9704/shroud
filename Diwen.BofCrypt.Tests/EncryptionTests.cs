@@ -34,6 +34,9 @@ namespace Diwen.BofCrypt.Tests
             Assert.Equal(expectedOutputFiles, outputFiles);
         }
 
+        [Fact]
+        public void CreatePackageTest()
+        => ReportPackage.Create("keys/fin-fsa-pub.xml", "output/reportpackage.zip", "data/header.xml", "data/report.xbrl");
 
         //     [Fact]
         //     public void CreateReportPackageTest()
