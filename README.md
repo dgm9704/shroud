@@ -1,3 +1,6 @@
+# see also
+[my shell script for doing the encryption](https://github.com/dgm9704/bofcrypt)
+
 # shroud
 [![.NET Core](https://github.com/dgm9704/shroud/workflows/.NET%20Core/badge.svg)](https://github.com/dgm9704/shroud/actions?query=workflow%3A%22.NET+Core%22)
 ## Diwen.BofCrypt
