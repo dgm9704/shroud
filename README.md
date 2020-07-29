@@ -1,6 +1,13 @@
 # see also
 [my shell script for doing the encryption](https://github.com/dgm9704/bofcrypt)
 
+[my dotnet library for handling XBRL reports](https://github.com/dgm9704/Xoxo)
+
+[my dotnet library for handling AIFMD reports](https://github.com/dgm9704/fame)
+
+[my dotnet library for handling FIN-FSA headers](https://github.com/dgm9704/tldr)
+
+
 # shroud
 [![.NET Core](https://github.com/dgm9704/shroud/workflows/.NET%20Core/badge.svg)](https://github.com/dgm9704/shroud/actions?query=workflow%3A%22.NET+Core%22)
 ## Diwen.BofCrypt
