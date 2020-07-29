@@ -12,7 +12,7 @@
 
 ### usage 
 - acquire public key in xml from FIN-FSA (or use the one included test project)
-- generate XBRL report and XML header file according to instructions from FIN-FSA
+- generate report file (XBRL/XML) and XML header file according to instructions from FIN-FSA
 - ` ReportPackage.Create(publickeyxmlfile, reportpackagezipfile, xbrlreportfile, headerxmlfile); `
 
 ### requirements
